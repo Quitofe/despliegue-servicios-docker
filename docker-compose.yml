@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16
+    container_name: agila-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - agila_db_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    image: agila:1.0.0
+    container_name: agila-web
+    restart: unless-stopped
+    ports:
+      - "2006:5000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - db
+
+volumes:
+  agila_db_data:
